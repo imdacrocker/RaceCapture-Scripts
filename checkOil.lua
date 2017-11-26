@@ -1,5 +1,7 @@
+--Oil Pressure Warning
+
 function checkOil()
-  if getAnalog(6) < 5 --Checks oil pressure
+  if getAnalog(6) < 5
     then 
       setGpio(0,1)
     else 
