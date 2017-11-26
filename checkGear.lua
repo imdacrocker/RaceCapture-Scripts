@@ -16,4 +16,3 @@ function checkGear()
   end
   setChannel(gearId, gearPos)
 end
---testing git v2
