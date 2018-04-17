@@ -1,4 +1,4 @@
-setTickRate(10) --Times per second this script runs
+setTickRate(10) --Times per second this script runs test
 
 -- VARIOUS SETTINGS
 
