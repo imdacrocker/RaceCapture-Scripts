@@ -47,18 +47,18 @@
             250.0
           ]
         },
-        "max": 150,
-        "min": 0,
+        "max": 150.0,
+        "min": 0.0,
         "nm": "Brake",
-        "offset": 0.0,
+        "offset": 0.6,
         "prec": 0,
-        "scalMod": 2,
-        "scaling": 1.0,
+        "scalMod": 1,
+        "scaling": 62.5,
         "sr": 5,
         "ut": "PSI"
       },
       "2": {
-        "alpha": 1.0,
+        "alpha": 0.792,
         "map": {
           "raw": [
             0.0,
@@ -75,13 +75,13 @@
             315.0
           ]
         },
-        "max": 255,
-        "min": 0,
+        "max": 100.0,
+        "min": 0.0,
         "nm": "MAP",
         "offset": 0.0,
         "prec": 0,
-        "scalMod": 2,
-        "scaling": 1.0,
+        "scalMod": 1,
+        "scaling": 20.0,
         "sr": 5,
         "ut": "KPa"
       },
@@ -187,13 +187,13 @@
             145.0
           ]
         },
-        "max": 60,
-        "min": 0,
+        "max": 60.0,
+        "min": 0.0,
         "nm": "OilPress",
-        "offset": 0.0,
+        "offset": 0.5,
         "prec": 0,
-        "scalMod": 2,
-        "scaling": 1.0,
+        "scalMod": 1,
+        "scaling": 36.25,
         "sr": 5,
         "ut": ""
       },
@@ -340,7 +340,7 @@
         "mode": 1,
         "nm": "ShiftLight",
         "prec": 0,
-        "sr": 5,
+        "sr": 10,
         "ut": ""
       },
       "2": {
@@ -451,7 +451,7 @@
         "min": 0,
         "nm": "ElapsedTime",
         "prec": 4,
-        "sr": 0,
+        "sr": 10,
         "ut": "Min"
       },
       "lapCount": {
@@ -556,8 +556,8 @@
     "timerCfg": {
       "0": {
         "alpha": 1.0,
-        "max": 10000,
-        "min": 0,
+        "max": 8000.0,
+        "min": 0.0,
         "mode": 0,
         "nm": "RPM",
         "ppr": 3.0,
