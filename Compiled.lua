@@ -1,4 +1,4 @@
-setTickRate(10) --Times per second this script runs test
+setTickRate(10) --Times per second this script runs
 
 -- VARIOUS SETTINGS
 
@@ -66,16 +66,16 @@ end
 local logstatus = 0
 
 function logging()
-  --will reset max rpm and over rev counter if you stop and shut off the car and then start again
-  if rpm < 100 and speed < 5 and getAnalog(7) < 13  --Checks RPM, speed, and battery voltage
-    then 
-      logstatus = 0
-  end
- if rpm > 100 and logstatus == 0 
+ if getButton() == true then
+    println("Pushed")
+    maxRpm = 0  --Resets maximum RPM counter
+	setChannel(maxRpmId, maxRpm)
+    overRevCount = 0  --Resets over rev counter
+	setChannel(orcId,overRevCount)
+	end
+ if rpm > 100
   then
   startLogging()
-  local maxRpm = 0  --Resets maximum RPM counter
-  local overRevCount = 0  --Resets over rev counter
  end
  -- println("RPM " ..rpm)
  -- println("Speed " ..speed)
@@ -88,10 +88,8 @@ end
 
 --Oil Pressure LED
 
-local oilWarn = 0
-
 function checkOil()
- if getAnalog(0) < pressureWarn --Checks oil pressure
+ if getAnalog(6) < pressureWarn --Checks oil pressure
   then 
    setGpio(0,1)
   else 

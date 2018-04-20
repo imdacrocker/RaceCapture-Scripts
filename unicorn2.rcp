@@ -47,43 +47,43 @@
             250.0
           ]
         },
-        "max": 150.0,
-        "min": 0.0,
+        "max": 150,
+        "min": 0,
         "nm": "Brake",
         "offset": 0.6,
         "prec": 0,
-        "scalMod": 1,
+        "scalMod": 2,
         "scaling": 62.5,
         "sr": 5,
         "ut": "PSI"
       },
       "2": {
-        "alpha": 0.792,
+        "alpha": 0.79,
         "map": {
           "raw": [
             0.0,
-            1.25,
-            2.5,
-            3.75,
-            5.0
+            1.2,
+            2.4,
+            3.6,
+            4.8
           ],
           "scal": [
             0.0,
-            80.0,
-            159.0,
-            237.0,
-            315.0
+            25.0,
+            50.0,
+            75.0,
+            100.0
           ]
         },
-        "max": 100.0,
-        "min": 0.0,
+        "max": 100,
+        "min": 0,
         "nm": "MAP",
         "offset": 0.0,
         "prec": 0,
-        "scalMod": 1,
+        "scalMod": 0,
         "scaling": 20.0,
         "sr": 5,
-        "ut": "KPa"
+        "ut": "Percent"
       },
       "3": {
         "alpha": 1.0,
@@ -187,12 +187,12 @@
             145.0
           ]
         },
-        "max": 60.0,
-        "min": 0.0,
+        "max": 60,
+        "min": 0,
         "nm": "OilPress",
         "offset": 0.5,
         "prec": 0,
-        "scalMod": 1,
+        "scalMod": 2,
         "scaling": 36.25,
         "sr": 5,
         "ut": ""
@@ -331,7 +331,7 @@
         "mode": 1,
         "nm": "OilWarn",
         "prec": 0,
-        "sr": 5,
+        "sr": 10,
         "ut": ""
       },
       "1": {
@@ -369,72 +369,72 @@
         "chan": 0,
         "max": 3.0,
         "min": -3.0,
-        "mode": 0,
+        "mode": 1,
         "nm": "AccelX",
         "prec": 2,
         "sr": 10,
         "ut": "G",
-        "zeroVal": -1081
+        "zeroVal": -454
       },
       "1": {
         "alpha": 0.1,
         "chan": 1,
         "max": 3.0,
         "min": -3.0,
-        "mode": 0,
+        "mode": 1,
         "nm": "AccelY",
         "prec": 2,
         "sr": 10,
         "ut": "G",
-        "zeroVal": -241
+        "zeroVal": 365
       },
       "2": {
         "alpha": 0.1,
         "chan": 2,
         "max": 3.0,
         "min": -3.0,
-        "mode": 0,
+        "mode": 1,
         "nm": "AccelZ",
         "prec": 2,
         "sr": 10,
         "ut": "G",
-        "zeroVal": -7
+        "zeroVal": 247
       },
       "3": {
         "alpha": 0.1,
         "chan": 3,
         "max": 300.0,
         "min": -300.0,
-        "mode": 0,
+        "mode": 1,
         "nm": "Yaw",
         "prec": 1,
         "sr": 10,
         "ut": "Deg/Sec",
-        "zeroVal": 63
+        "zeroVal": 35
       },
       "4": {
         "alpha": 0.1,
         "chan": 4,
         "max": 300.0,
         "min": -300.0,
-        "mode": 0,
+        "mode": 1,
         "nm": "Pitch",
         "prec": 1,
         "sr": 10,
         "ut": "Deg/Sec",
-        "zeroVal": -85
+        "zeroVal": -88
       },
       "5": {
         "alpha": 0.1,
         "chan": 5,
         "max": 300.0,
         "min": -300.0,
-        "mode": 0,
+        "mode": 1,
         "nm": "Roll",
         "prec": 1,
         "sr": 10,
         "ut": "Deg/Sec",
-        "zeroVal": 119
+        "zeroVal": 108
       }
     },
     "lapCfg": {
@@ -451,7 +451,7 @@
         "min": 0,
         "nm": "ElapsedTime",
         "prec": 4,
-        "sr": 10,
+        "sr": 0,
         "ut": "Min"
       },
       "lapCount": {
@@ -550,14 +550,14 @@
       }
     },
     "scriptCfg": {
-      "data": "setTickRate(10) --Times per second this script runs\n\n-- VARIOUS SETTINGS\n\n--RPM limit for over rev marker\n\nlocal rpmLimit = 6500\n\n--RPM for shift light activation\n\nlocal shiftRpm = 5750\nlocal shiftRpmBlink = 6000\n\n--Low oil pressure warning\n\nlocal pressureWarn = 5\n\n--gear ratios\n\nlocal _1stGear = 3.8\nlocal _2ndGear = 2.20\nlocal _3rdGear = 1.4\nlocal _4thGear = 1.0\nlocal _5thGear = 0.81\nlocal FinalDrive = 4.10\nlocal TireDia = 22.7 \nlocal gearErr = 0.1 --Allowable error in the calculation\n\n--FUNCTIONS\n\n-- Overrev Count\n\norcId = addChannel(\"OverRevs\",1,0,0,10)\nlocal overRevCount = 0 --sets initial over rev count\nlocal overRevStatus = 0  --sets initial over rev status\n\nfunction overRevCounter()\n if rpm > rpmLimit and overRevStatus == 0 \n  then \n  overRevStatus = 1 --makes sure counter only increases when you cross RPM limit\n  overRevCount = overRevCount + 1\n  setChannel(orcId,overRevCount)\n end\n if rpm < rpmLimit\n  then\n  overRevStatus = 0  --resets flag when you fall below RPM limit\n end\n\nend\n\n-- Max RPM marker\n\nmaxRpmId = addChannel(\"MaxRpm\",1,0,0,9000)\nlocal maxRpm = 0 --sets initial Max RPM\n\nfunction maxRev()\n if rpm > maxRpm \n  then\n  maxRpm = rpm\n  setChannel(maxRpmId, maxRpm)\n end\nend\n\n--start logging to SD card\n\nlocal logstatus = 0\n\nfunction logging()\n  --will reset max rpm and over rev counter if you stop and shut off the car and then start again\n  if rpm < 100 and speed < 5 and getAnalog(7) < 13  --Checks RPM, speed, and battery voltage\n    then \n      logstatus = 0\n  end\n if rpm > 100 and logstatus == 0 \n  then\n  startLogging()\n  local maxRpm = 0  --Resets maximum RPM counter\n  local overRevCount = 0  --Resets over rev counter\n end\n -- println(\"RPM \" ..rpm)\n -- println(\"Speed \" ..speed)\n -- println(\"Battery \" ..getAnalog(7))\n -- println(\"Loggin Status\" ..logstatus)\n -- println(\"Max RPM\" ..maxRpm)\n -- println(\"Over REvs \" ..overRevCount)\n -- println(\"Is Logging \" ..isLogging())\nend\n\n--Oil Pressure LED\n\nlocal oilWarn = 0\n\nfunction checkOil()\n if getAnalog(0) < pressureWarn --Checks oil pressure\n  then \n   setGpio(0,1)\n  else \n   setGpio(0,0)\n end\nend\n\n-- Shift Light\n\nlocal timer = 1\nlocal button = 0 \nlocal lightOn = 0\n\nfunction shiftLight()\n\n if rpm > shiftRpm\n  then \n   setGpio(1,1)\n  else\n   setGpio(1,0)\n end \n if rpm > shiftRpmBlink\n  then\n   if timer == 1\n    then\n     setGpio(1,0)\n     timer = 0\n    else\n     timer = timer + 1\n    end\n   end\n end\n\n-- Gear Check\n\ngearId = addChannel(\"Gear\",5,0,0,5)\nlocal rpmSpeedRatio = 0 --sets initial gear calculation\nlocal gearPos = 0 --sets initial gear position\n\nfunction checkGear()\n rpmSpeedRatio = (rpm/speed)/(FinalDrive*1056/(TireDia*3.14159))\n if speed > 10 --makes sure not dividing by 0\n  then\n   if ((_1stGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 1 end\n   if ((_2ndGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 2 end\n   if ((_3rdGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 3 end\n   if ((_4thGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 4 end\n   if ((_5thGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 5 end\n  else gearPos = 0 \n end\n setChannel(gearId, gearPos)\nend\n\nfunction onTick()  --Runs all of the other functions \n rpm = getTimerRpm(0) --Gets RPM needed for various functions\n speed = getGpsSpeed() --Gets speed needed for various functions\n maxRev()\n logging()\n checkGear()\n overRevCounter()\n checkOil()\n shiftLight()\nend",
+      "data": "setTickRate(10) --Times per second this script runs\n\n-- VARIOUS SETTINGS\n\n--RPM limit for over rev marker\n\nlocal rpmLimit = 6500\n\n--RPM for shift light activation\n\nlocal shiftRpm = 5750\nlocal shiftRpmBlink = 6000\n\n--Low oil pressure warning\n\nlocal pressureWarn = 5\n\n--gear ratios\n\nlocal _1stGear = 3.8\nlocal _2ndGear = 2.20\nlocal _3rdGear = 1.4\nlocal _4thGear = 1.0\nlocal _5thGear = 0.81\nlocal FinalDrive = 4.10\nlocal TireDia = 22.7 \nlocal gearErr = 0.1 --Allowable error in the calculation\n\n--FUNCTIONS\n\n-- Overrev Count\n\norcId = addChannel(\"OverRevs\",1,0,0,10)\nlocal overRevCount = 0 --sets initial over rev count\nlocal overRevStatus = 0  --sets initial over rev status\n\nfunction overRevCounter()\n if rpm > rpmLimit and overRevStatus == 0 \n  then \n  overRevStatus = 1 --makes sure counter only increases when you cross RPM limit\n  overRevCount = overRevCount + 1\n  setChannel(orcId,overRevCount)\n end\n if rpm < rpmLimit\n  then\n  overRevStatus = 0  --resets flag when you fall below RPM limit\n end\n\nend\n\n-- Max RPM marker\n\nmaxRpmId = addChannel(\"MaxRpm\",1,0,0,9000)\nlocal maxRpm = 0 --sets initial Max RPM\n\nfunction maxRev()\n if rpm > maxRpm \n  then\n  maxRpm = rpm\n  setChannel(maxRpmId, maxRpm)\n end\nend\n\n--start logging to SD card\n\nlocal logstatus = 0\n\nfunction logging()\n if getButton() == true then\n    println(\"Pushed\")\n    maxRpm = 0  --Resets maximum RPM counter\n\tsetChannel(maxRpmId, maxRpm)\n    overRevCount = 0  --Resets over rev counter\n\tsetChannel(orcId,overRevCount)\n\tend\n if rpm > 100\n  then\n  startLogging()\n end\n -- println(\"RPM \" ..rpm)\n -- println(\"Speed \" ..speed)\n -- println(\"Battery \" ..getAnalog(7))\n -- println(\"Loggin Status\" ..logstatus)\n -- println(\"Max RPM\" ..maxRpm)\n -- println(\"Over REvs \" ..overRevCount)\n -- println(\"Is Logging \" ..isLogging())\nend\n\n--Oil Pressure LED\n\nfunction checkOil()\n if getAnalog(6) < pressureWarn --Checks oil pressure\n  then \n   setGpio(0,1)\n  else \n   setGpio(0,0)\n end\nend\n\n-- Shift Light\n\nlocal timer = 1\nlocal button = 0 \nlocal lightOn = 0\n\nfunction shiftLight()\n\n if rpm > shiftRpm\n  then \n   setGpio(1,1)\n  else\n   setGpio(1,0)\n end \n if rpm > shiftRpmBlink\n  then\n   if timer == 1\n    then\n     setGpio(1,0)\n     timer = 0\n    else\n     timer = timer + 1\n    end\n   end\n end\n\n-- Gear Check\n\ngearId = addChannel(\"Gear\",5,0,0,5)\nlocal rpmSpeedRatio = 0 --sets initial gear calculation\nlocal gearPos = 0 --sets initial gear position\n\nfunction checkGear()\n rpmSpeedRatio = (rpm/speed)/(FinalDrive*1056/(TireDia*3.14159))\n if speed > 10 --makes sure not dividing by 0\n  then\n   if ((_1stGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 1 end\n   if ((_2ndGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 2 end\n   if ((_3rdGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 3 end\n   if ((_4thGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 4 end\n   if ((_5thGear - rpmSpeedRatio)^2) < (gearErr^2) then gearPos = 5 end\n  else gearPos = 0 \n end\n setChannel(gearId, gearPos)\nend\n\nfunction onTick()  --Runs all of the other functions \n rpm = getTimerRpm(0) --Gets RPM needed for various functions\n speed = getGpsSpeed() --Gets speed needed for various functions\n maxRev()\n logging()\n checkGear()\n overRevCounter()\n checkOil()\n shiftLight()\nend",
       "page": null
     },
     "timerCfg": {
       "0": {
         "alpha": 1.0,
-        "max": 8000.0,
-        "min": 0.0,
+        "max": 8000,
+        "min": 0,
         "mode": 0,
         "nm": "RPM",
         "ppr": 3.0,
