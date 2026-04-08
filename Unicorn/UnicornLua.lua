@@ -1,10 +1,12 @@
 local m = addChannel("MaxRpm", 1, 0, 0, 9000)
 local g = addChannel("Gear", 5, 0, 0, 5)
 local c = addChannel("Camera", 1, 0, 0, 2)
+local get = 'GET /gp/gpControl/command/storage/tag_moment HTTP/1.0' ..
+            string.char(13) .. string.char(10) .. string.char(13) .. string.char(10)
 StopTime = getUptime()
 Moving = false
 EngineOffTime = getUptime()
-Timer = 1
+ShiftLightState = 1
 LastResponse = getUptime()
 LastKeepAlive = getUptime()
 LastRequest = getUptime()
@@ -12,8 +14,7 @@ Lap = getLapCount()
 
 function sendRaw(val)
     for i = 1, #val do
-        local c = string.sub(val, i, i)
-        writeCSer(5, string.byte(c))
+        writeCSer(5, string.byte(val, i))
     end
 end
 
@@ -25,12 +26,12 @@ end
 
 function sendCommand(command, connection)
     sendAt('AT+CIPSEND=' .. connection .. ',' .. string.sub(#command, 1, -3))
-    pi()
+    processIncoming()
     sendRaw(command)
-    pi()
+    processIncoming()
 end
 
-function pi()
+function processIncoming()
     local char = readCSer(5, 100)
     if char == nil then
         return
@@ -39,9 +40,11 @@ function pi()
     while (char ~= nil) do
         line = line .. string.char(char)
         if string.find(line, '+IPD,') then
-            readCSer(5, 100)
+            if readCSer(5, 100) == nil then return end
             char = readCSer(5, 100)
+            if char == nil then return end
             char = readCSer(5, 100)
+            if char == nil then return end
             local length = ''
             while char ~= 58 do
                 if char == nil then
@@ -54,12 +57,13 @@ function pi()
             if tonumber(length) == nil then
             else
                 for i = 1, tonumber(length) do
-                    packet = packet .. string.sub(readCSer(5, 100), 1, -3) .. ' '
+                    local b = readCSer(5, 100)
+                    if b == nil then
+                        return
+                    end
+                    packet = packet .. string.sub(b, 1, -3) .. ' '
                 end
                 LastResponse = getUptime()
-                if getChannel(c) == 0 then
-                    setChannel(c, 1)
-                end
                 if packet == '95 71 80 72 68 95 58 48 58 48 58 50 58 1 ' then
                     if getChannel(c) == 0 then
                         setChannel(c, 1)
@@ -79,27 +83,27 @@ function pi()
 end
 
 sendAt('AT+RST')
-pi()
+processIncoming()
 sendAt('AT+CWMODE_CUR=2')
-pi()
+processIncoming()
 sendAt('AT+CWSAP_CUR="HERO-RC-000000","",1,0')
-pi()
+processIncoming()
 sendAt('AT+CIPAPMAC_CUR="d8:96:85:00:00:00"')
-pi()
+processIncoming()
 sendAt('AT+CIPAP_CUR="10.71.79.1"')
-pi()
+processIncoming()
 sendAt('AT+CIPMUX=1')
-pi()
+processIncoming()
 sleep(1000)
 sendAt('AT+CIPSTART=0,"UDP","255.255.255.255",9')
-pi()
+processIncoming()
 sendAt('AT+CIPSTART=1,"UDP","10.71.79.2",8484,8383')
-pi()
+processIncoming()
 
 setTickRate(10)
 function onTick()
     local rpm = getChannel("RPM")
-
+    if rpm == nil then rpm = 0 end
     -- Various functions around stopping and going
     if (Moving) then -- If the car was moving last time we checked
         StopTime = getUptime() -- Always update when moving 
@@ -137,8 +141,10 @@ function onTick()
     setChannel(g, gearPos)
 
     -- Oil Pressure
-    if (rpm > 3000 and getChannel("OilPress") < 20) then setGpio(0, 1)
-    elseif (getChannel("OilPress") < 5 and rpm <= 3000) then
+    local oilP = getChannel("OilPress")
+    if oilP == nil then oilP = 0 end
+    if (rpm > 3000 and oilP < 20) then setGpio(0, 1)
+    elseif (oilP < 5 and rpm <= 3000) then
         if (Moving) then setGpio(0, 1) -- If the car is moving, set the light
         else
             if ((getUptime() - EngineOffTime) < 5000) then
@@ -153,14 +159,14 @@ function onTick()
         setGpio(1, 1)
     else
         setGpio(1, 0)
-        Timer = 0
+        ShiftLightState = 0
     end
     if rpm > 6000 then
-        if Timer == 1 then
+        if ShiftLightState == 1 then
             setGpio(1, 0)
-            Timer = 0
+            ShiftLightState = 0
         else
-            Timer = 1
+            ShiftLightState = 1
         end
     end
     -- Check Cameras
@@ -184,9 +190,9 @@ function onTick()
     -- Send KeepAlive every 1.5s
     if (getUptime() - LastKeepAlive) > 1500 then
         sendAt('AT+CIPSEND=1,22')
-        pi()
+        processIncoming()
         sendRaw('_GPHD_:0:0:2:0.000000\n')
-        pi()
+        processIncoming()
         LastKeepAlive = getUptime()
     end
     -- Request an update every 5 seconds
@@ -198,14 +204,13 @@ function onTick()
     if Lap ~= getLapCount() then
         Lap = getLapCount()
         sendAt('AT+CIPSTART=3,"TCP","10.71.79.2",80')
-        pi()
-        local get = 'GET /gp/gpControl/command/storage/tag_moment HTTP/1.0' ..
-            string.char(13) .. string.char(10) .. string.char(13) .. string.char(10)
-        sendAt('AT+CIPSEND=3,' .. string.sub(#get, 1, -3))
-        pi()
+        processIncoming()
+        sendAt('AT+CIPSEND=3,' .. string.sub(#get,1, -3))
+        processIncoming()
         sendRaw(get)
-        pi()
+        processIncoming()
         sendAt("AT+CIPCLOSE,3")
     end
-    pi()
+    processIncoming()
+    collectgarbage()
 end
