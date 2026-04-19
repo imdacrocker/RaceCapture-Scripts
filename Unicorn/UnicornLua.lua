@@ -109,7 +109,7 @@ sA('AT+RST')
 pi()
 sA('AT+CWMODE_CUR=2')
 pi()
-sA('AT+CWSAP_CUR="HERO-RC-000000","",1,0')
+sA('AT+CWSAP_CUR="HERO-RC-000324","",1,0')
 pi()
 sA('AT+CIPAPMAC_CUR="d8:96:85:00:00:00"')
 pi()
@@ -123,7 +123,7 @@ pi()
 sA('AT+CIPSTART=1,"UDP","10.71.79.2",8484,8383')
 pi()
 
-setTickRate(25)
+setTickRate(10)
 function onTick()
     local rpm = getChannel("RPM")
     if rpm == nil then rpm = 0 end
@@ -176,13 +176,13 @@ function onTick()
     else setGpio(0, 0) end -- Otherwise, set the light to off
 
     -- Shift Light
-    if rpm > 5750 then
+    if rpm > 6250 then
         setGpio(1, 1)
     else
         setGpio(1, 0)
         sl = 0
     end
-    if rpm > 6000 then
+    if rpm > 6500 then
         if sl == 1 then
             setGpio(1, 0)
             sl = 0
